@@ -59,7 +59,7 @@ public class SectionApi {
         if(delete==true){
             return ResponseEntity.ok("Silme işleminiz Başarılı bir şekilde gerçekleşti ");
         }else {
-            return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("Silme İşlemi Başarısız");
+            return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("Silme İşlemi başarısız");
         }
     }
 
