@@ -1,6 +1,7 @@
-package com.education.university;
+package com.education.university.studentServiceTest;
 
 import com.education.university.business.model.response.GetAllStudentResponse;
+import com.education.university.business.rules.StudentRules;
 import com.education.university.business.serviceImpl.StudentServiceImpl;
 import com.education.university.entity.Student;
 import com.education.university.repo.StudentRepo;
@@ -18,19 +19,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
-public class StudentServiceTest {
+public class StudentServiceGetAllTest {
     @Mock
     private StudentRepo studentRepo; // Mock Repository  repoyu taklit ediyor sahte nesne olarak tanımlanıyor
 
     @Mock
     private ModelMapper modelMapper; // Mock ModelMapper  model mapperı taklit ediyor
+    @Mock
+    private StudentRules studentRules;
 
     @InjectMocks
     private StudentServiceImpl studentService; // @InjectMocks: studentService nesnesinin içerisine mock nesneleri enjekte eder. Böylece test edilen sınıf, test ortamında çalışabilir.
 
     @BeforeEach //Her test metodundan önce çalışacak olan bir metot. Burada, Mockito'nun mock nesnelerini başlatıyoruz.
-    public void setUp() {
-        MockitoAnnotations.openMocks(this); // Mock nesneleri başlatmak için kullanılır
+    public void setUp() {      // Mock nesneleri başlatmak için kullanılır
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test

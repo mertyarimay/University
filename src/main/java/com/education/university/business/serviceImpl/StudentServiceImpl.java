@@ -26,7 +26,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public CreateStudentRequestModel add(CreateStudentRequestModel createStudentRequestModel) {
-        studentRules.exitsStudentNo(createStudentRequestModel.getStudentNo());
+        studentRules.existsStudentNo(createStudentRequestModel.getStudentNo());
         studentRules.checkSectionId(createStudentRequestModel.getSectionId());
         Student student=modelMapper.map(createStudentRequestModel,Student.class);
         studentRepo.save(student);
@@ -59,7 +59,7 @@ public class StudentServiceImpl implements StudentService {
     public UpdateStudentRequestModel update(UpdateStudentRequestModel updateStudentRequestModel, int id) {
         Student student=studentRepo.findById(id).orElse(null);
         if(student!=null){
-            studentRules.exitsStudentNo(updateStudentRequestModel.getStudentNo());
+            studentRules.existsStudentNo(updateStudentRequestModel.getStudentNo());
             student.setStudentNo(updateStudentRequestModel.getStudentNo());
             studentRepo.save(student);
             UpdateStudentRequestModel updateStudentModel=modelMapper.map(student,UpdateStudentRequestModel.class);

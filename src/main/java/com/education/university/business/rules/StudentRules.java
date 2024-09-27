@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class StudentRules {
     private final StudentRepo studentRepo;
     private final SectionRepo sectionRepo;
-    public void exitsStudentNo(String studentNo){
+    public void existsStudentNo(String studentNo){
         if (studentRepo.existsByStudentNo(studentNo)){
             throw new BusinessException("Aynı öğrenci Numarası İle Kayıt Mevcut");
         }
