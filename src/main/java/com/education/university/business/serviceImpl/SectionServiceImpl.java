@@ -59,7 +59,7 @@ public class SectionServiceImpl implements SectionService {
             sectionRules.existsName(updateSectionRequestModel.getSectionName());
             section.get().setSectionName(updateSectionRequestModel.getSectionName());
             sectionRepo.save(section.get());
-            UpdateSectionRequestModel updateSectionModel = modelMapper.map(section, UpdateSectionRequestModel.class);
+            UpdateSectionRequestModel updateSectionModel = modelMapper.map(section.get(), UpdateSectionRequestModel.class);
             return updateSectionModel;
         }else {
             return null;
