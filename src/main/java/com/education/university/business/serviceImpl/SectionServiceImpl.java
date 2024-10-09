@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -35,10 +36,13 @@ public class SectionServiceImpl implements SectionService {
     @Override
     public List<GetAllSectionResponse> getAll() {
         List<Section> sections = sectionRepo.findAll();
-        List<GetAllSectionResponse> getAllSectionResponses = sections.stream()
-                .map(section -> modelMapper.map(section, GetAllSectionResponse.class))
-                .collect(Collectors.toList());
+        List<GetAllSectionResponse>getAllSectionResponses=new ArrayList<>();
+        for (Section section:sections){
+            GetAllSectionResponse getAllSectionResponse=modelMapper.map(section,GetAllSectionResponse.class);
+            getAllSectionResponses.add(getAllSectionResponse);
+        }
         return getAllSectionResponses;
+
     }
 
     @Override

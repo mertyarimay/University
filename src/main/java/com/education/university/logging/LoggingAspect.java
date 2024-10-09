@@ -5,13 +5,15 @@ import org.slf4j.LoggerFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+
+
 import org.springframework.stereotype.Component;
 
 @Aspect   //aspect kullanıldığı belirtmek için kullanıyoruz
 @Component
-public class LoggingAspect {
+  public class LoggingAspect {
 
-    private static final Logger logger = LoggerFactory.getLogger(LoggingAspect.class); //logger nesnesini oluştuma
+    private static final Logger logger = LoggerFactory.getLogger(LoggingAspect.class); //LoggingAspect.class  bu sınıf için bir logger nesnesi oluştur bu logların hangi sınıftan geldiği belli olsun.
 
     @Around("execution(* com.education.university.business.service.*.*(..))") //@around metodun hem öncesi hem sonrasında çalışır
     //business  paketindeki tüm metotları hedef alır yani hepsi için konsola log u yazılır
@@ -21,7 +23,7 @@ public class LoggingAspect {
 
         Object result;
         try {
-            result = joinPoint.proceed(); // Metodu çalıştır  metot başarılı bir şekilde çalışırsa sonuç resulta atanır metot öncesi durumu
+            result = joinPoint.proceed(); // Metodu çalıştır  metot başarılı bir şekilde çalışırsa sonuç resulta atanır
             if(result==null){
                 logger.warn("Method {} boş değer döndürdü",methodName);
             } else if (result instanceof Boolean) {  //result değişkeni boolean olup olmadığını kontrol eder
@@ -55,11 +57,12 @@ public class LoggingAspect {
         @After("execution(* com.education.university.business.service.*.*(..))")
         public void logAfter(JoinPoint joinPoint) {
             String methodName = joinPoint.getSignature().getName();
-            logger.info("Başarılı", methodName);
+          logger.info("Method tamamlandı: {}", methodName);
         }*/
 
- //Before örneği
 
+
+   //Before Örneği
    /* public class LoggingAspect {
 
         private static final Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
@@ -72,26 +75,35 @@ public class LoggingAspect {
     }  */
 
 
+
+
+
     //tüm metotlara değil sadece get all için
-   /* public class LoggingAspect {
+
+/*@Aspect
+@Component
+
+   public class LoggingAspect {
 
     private static final Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
 
-    @Around("execution(* com.education.university.business.*.getAll(..))")
+    @Around("execution(* com.education.university.business.service.SectionService.getAll(..))")
+
     public Object logAroundGetAll(ProceedingJoinPoint joinPoint) throws Throwable {
         String methodName = joinPoint.getSignature().getName();
-        logger.info("Method Çağrıldı", methodName);
+        logger.info("Method Çağrıldı: {}", methodName);
 
         Object result;
         try {
             result = joinPoint.proceed(); // Metodu çalıştır
-            logger.info("Başarılı", methodName);
+            logger.info("Başarılı: {}", methodName);
         } catch (Throwable throwable) {
-            logger.error("BAŞARISIZ", methodName, throwable.getMessage());
+            logger.error("BAŞARISIZ: {}. Hata: {}", methodName, throwable.getMessage());
             throw throwable;
         }
 
         return result;
     }*/
+
 }
 
