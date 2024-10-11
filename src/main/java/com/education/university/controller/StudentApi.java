@@ -6,6 +6,8 @@ import com.education.university.business.model.response.GetAllSectionIdStudentRe
 import com.education.university.business.model.response.GetAllStudentResponse;
 import com.education.university.business.model.response.GetByIdStudentResponse;
 import com.education.university.business.service.StudentService;
+import com.education.university.util.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,7 @@ import java.util.Optional;
 @RequestMapping("/student")
 public class StudentApi {
     private final StudentService studentService;
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/add")
     public ResponseEntity<Object> add(@RequestBody @Valid CreateStudentRequestModel createStudentRequestModel){
@@ -32,10 +35,37 @@ public class StudentApi {
     }
 
     @GetMapping("/getAll")
-    public List<GetAllStudentResponse> getAll(){
-        List<GetAllStudentResponse>getAllStudentResponses=studentService.getAll();
-        return getAllStudentResponses;
+    public ResponseEntity<List<GetAllStudentResponse>> getAll(HttpServletRequest request) {
+        String token = request.getHeader("Authorization"); //authorizationdan gelen başlığı alır
+        System.out.println("Alınan token: " + token);
+
+        if (token != null && token.startsWith("Bearer ")) {  //token kontrol edilir Bearer başlığındamı geliyor diye
+            token = token.substring(7);  //baerer başlığını kaldırır sadece tokene elde eder
+        } else {
+            System.out.println("Token Eksik");     //token bearer başlığıyla değilse bir hata verir 401
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
+        // Token'ı doğrula
+        if (token != null) {
+            String username = jwtUtil.extractUsername(token); //tokenen kullanıcı adını çıkartır
+            boolean isValid = jwtUtil.validateToken(token, username);  //tokenen geçerliliğini doğrular süresi dolmuşmu vs
+
+            System.out.println("Geçerli: " + isValid);   //tokenen geçerli olup olmadığını çıkarılan kullanıcı adını console yazdırır
+            System.out.println("Kullanıcı adı Çıkarıldı: " + username);
+
+            if (isValid) {    //eğer token geçerliyse öğrenci listesini ver
+                List<GetAllStudentResponse> getAllStudentResponses = studentService.getAll();
+                return ResponseEntity.ok(getAllStudentResponses);
+            } else {    //token geçerli değilse bir hata mesajı ver
+                System.out.println("Token doğrulama Başarısız"); // Hata mesajı
+            }
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);  //eğer yukardaki işlemlerden hiç biri geçerli değilse hata mesajı döner
     }
+
+
+
     @GetMapping("/getById/{id}")
     public ResponseEntity<Object>getById(@PathVariable("id")int id){
         GetByIdStudentResponse getByIdStudentResponse=studentService.getById(id);

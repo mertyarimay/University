@@ -5,6 +5,8 @@ import com.education.university.business.model.request.UpdateSectionRequestModel
 import com.education.university.business.model.response.GetAllSectionResponse;
 import com.education.university.business.model.response.GetByIdSectionResponse;
 import com.education.university.business.service.SectionService;
+import com.education.university.util.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,7 @@ import java.util.List;
 @RequestMapping("/section")
 public class SectionApi {
     private final SectionService sectionService;
+    private final JwtUtil jwtUtil;
     @PostMapping("/add")
     public ResponseEntity<Object>add(@RequestBody @Valid CreateSectionRequestModel createSectionRequestModel){
         CreateSectionRequestModel createSectionModel=sectionService.add(createSectionRequestModel);
@@ -29,11 +32,38 @@ public class SectionApi {
         }
     }
     @GetMapping("/getAll")
-    public List<GetAllSectionResponse> getAll(){
-        List<GetAllSectionResponse>getAllSectionResponses=sectionService.getAll();
-        return getAllSectionResponses;
+    public ResponseEntity<?> getAll(HttpServletRequest request) {  //parametredeki HttpServletRequest Authorization daki tokene almak için kullanılıyor
+        String token = request.getHeader("Authorization");
+        System.out.println("Alınan token: " + token);
 
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        } else {
+            System.out.println("Token Eksik");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token Doğrulama Başarısız");
+        }
+
+        if (token != null) {
+            String userName = jwtUtil.extractUsername(token);
+            boolean isValid = jwtUtil.validateToken(token, userName);
+            System.out.println("Token Geçerli: " + isValid);
+            System.out.println("Kullanıcı adı Çıkarıldı: " + userName);
+
+            if (isValid) {
+                List<GetAllSectionResponse> getAllSectionResponses = sectionService.getAll();
+                return ResponseEntity.ok(getAllSectionResponses);
+            } else {
+                System.out.println("Token Doğrulama Başarısız");
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token Doğrulama Başarısız");
     }
+
+
+
+
+
     @GetMapping("getById/{id}")
     public ResponseEntity<Object>getById(@PathVariable("id") int id){
         GetByIdSectionResponse getByIdSectionResponse=sectionService.getById(id);
