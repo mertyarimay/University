@@ -105,5 +105,42 @@ import org.springframework.stereotype.Component;
         return result;
     }*/
 
+
+
+
+
+    //Tüm metotlar için projede
+/*@Around("execution(* com.education..*(..))")
+public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
+    String methodName = joinPoint.getSignature().getName();
+    logger.info("Method çağrıldı: {}", methodName);
+
+    Object result;
+    try {
+        result = joinPoint.proceed(); // Metodu çalıştır
+        if (result == null) {
+            logger.warn("Method {} boş değer döndürdü", methodName);
+        } else if (result instanceof Boolean) {
+            if ((Boolean) result) {
+                logger.info("Silme işlemi gerçekleşti: {}", methodName);
+            } else {
+                logger.warn("Başarılı ama silme işlemi gerçekleşmedi: Method {}, result = {}", methodName, result);
+            }
+        } else {
+            logger.info("Başarılı: Method {}", methodName);
+        }
+    } catch (Throwable throwable) {
+        logger.error("BAŞARISIZ: Method {}, hata mesajı: {}", methodName, throwable.getMessage());
+        throw throwable; // Hata fırlat
+    }
+
+    return result;
+}*/
+
+
+
+
+
+
 }
 
