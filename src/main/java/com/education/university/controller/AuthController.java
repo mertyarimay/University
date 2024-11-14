@@ -2,6 +2,7 @@ package com.education.university.controller;
 
 import com.education.university.business.model.request.UserLoginRequest;
 import com.education.university.business.model.request.UserRegisterRequest;
+import com.education.university.business.model.response.UserLoginResponse;
 import com.education.university.business.service.UserService;
 import com.education.university.config.exception.BusinessException;
 import com.education.university.util.JwtUtil;
@@ -21,7 +22,7 @@ public class AuthController {
     private final JwtUtil jwtUtil;
 
 
-    @PostMapping("register")
+    @PostMapping("/register")
     public ResponseEntity<Object> register (@RequestBody UserRegisterRequest userRegisterRequest){
         UserRegisterRequest userRequest=userService.register(userRegisterRequest);
         if(userRequest!=null){
@@ -35,9 +36,9 @@ public class AuthController {
 
     @PostMapping("/login")
     public String login(@RequestBody UserLoginRequest userLoginRequest){
-        UserLoginRequest loginRequest=userService.login(userLoginRequest);
-        if(loginRequest!=null){
-           return jwtUtil.generateToken(userLoginRequest.getUserName());
+       UserLoginResponse userLoginResponse =userService.login(userLoginRequest);
+        if(userLoginResponse!=null){
+           return jwtUtil.generateToken(userLoginResponse.getUserName(),userLoginResponse.getRoleName());
 
 
         }

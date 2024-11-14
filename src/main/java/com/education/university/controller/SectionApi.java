@@ -6,11 +6,11 @@ import com.education.university.business.model.response.GetAllSectionResponse;
 import com.education.university.business.model.response.GetByIdSectionResponse;
 import com.education.university.business.service.SectionService;
 import com.education.university.util.JwtUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +21,8 @@ import java.util.List;
 public class SectionApi {
     private final SectionService sectionService;
     private final JwtUtil jwtUtil;
+
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping("/add")
     public ResponseEntity<Object>add(@RequestBody @Valid CreateSectionRequestModel createSectionRequestModel){
         CreateSectionRequestModel createSectionModel=sectionService.add(createSectionRequestModel);
@@ -31,39 +33,19 @@ public class SectionApi {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Kayıt işlemi Başarısız");
         }
     }
+
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")  //buraya ulaşılması için yetkiyi kontrol eder sadece bu yetkiye sahip kullanıcıların çağırmasına izin verir
     @GetMapping("/getAll")
-    public ResponseEntity<?> getAll(HttpServletRequest request) {  //parametredeki HttpServletRequest Authorization daki tokene almak için kullanılıyor
-        String token = request.getHeader("Authorization");
-        System.out.println("Alınan token: " + token);
-
-        if (token != null && token.startsWith("Bearer ")) {
-            token = token.substring(7);
-        } else {
-            System.out.println("Token Eksik");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token Doğrulama Başarısız");
-        }
-
-        if (token != null) {
-            String userName = jwtUtil.extractUsername(token);
-            boolean isValid = jwtUtil.validateToken(token, userName);
-            System.out.println("Token Geçerli: " + isValid);
-            System.out.println("Kullanıcı adı Çıkarıldı: " + userName);
-
-            if (isValid) {
-                List<GetAllSectionResponse> getAllSectionResponses = sectionService.getAll();
-                return ResponseEntity.ok(getAllSectionResponses);
-            } else {
-                System.out.println("Token Doğrulama Başarısız");
-            }
-        }
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token Doğrulama Başarısız");
+    public ResponseEntity<?> getAllSections() {
+        List<GetAllSectionResponse> getAllSectionResponses = sectionService.getAll();
+        return ResponseEntity.ok(getAllSectionResponses);
     }
 
 
 
 
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("getById/{id}")
     public ResponseEntity<Object>getById(@PathVariable("id") int id){
         GetByIdSectionResponse getByIdSectionResponse=sectionService.getById(id);
@@ -73,6 +55,7 @@ public class SectionApi {
          return    ResponseEntity.status(HttpStatus.NOT_FOUND).body("Bu Id Ye Ait Kayıt Yoktur.");
         }
     }
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PutMapping("/update/{id}")
     public ResponseEntity<Object>update(@RequestBody @Valid UpdateSectionRequestModel updateSectionRequestModel,@PathVariable("id") int id){
         UpdateSectionRequestModel updateSectionModel=sectionService.update(updateSectionRequestModel,id);
@@ -83,6 +66,7 @@ public class SectionApi {
         }
 
     }
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping("delete/{id}")
     public ResponseEntity<Object> delete(@PathVariable("id")int id){
         boolean delete=sectionService.delete(id);

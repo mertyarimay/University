@@ -1,4 +1,4 @@
-package com.education.university.business.model.request;
+package com.education.university.business.model.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRegisterRequest {
+public class UserLoginResponse {
     private String userName;
-    private String password;
-    private int roleId;
+    private String roleName;
 }
