@@ -51,23 +51,27 @@ public class SectionServiceAddTest {
 
     @Test
     public void checkSectionName() {
+
         CreateSectionRequestModel createSectionRequestModel = new CreateSectionRequestModel();
         createSectionRequestModel.setSectionName("Test");
 
-         when(sectionRepo.existsBySectionName(createSectionRequestModel.getSectionName())).thenReturn(true);
-
-
+        // rule exception fırlatacak
         doThrow(new BusinessException("Aynı isimde kayıt mevcuttur"))
-                .when(sectionRules).existsName(createSectionRequestModel.getSectionName());
+                .when(sectionRules)
+                .existsName(createSectionRequestModel.getSectionName());
 
+        // when
         BusinessException exception = assertThrows(BusinessException.class, () -> {
             sectionService.add(createSectionRequestModel);
         });
 
+        // then
         assertEquals("Aynı isimde kayıt mevcuttur", exception.getMessage());
 
-        verify(sectionRules, times(1)).existsName(createSectionRequestModel.getSectionName());
-        verify(sectionRepo, times(1)).existsBySectionName(createSectionRequestModel.getSectionName());
+        verify(sectionRules, times(1))
+                .existsName(createSectionRequestModel.getSectionName());
+
+        // exception olduğu için save çağrılmamalı
         verify(sectionRepo, never()).save(any());
     }
 
